@@ -42,6 +42,12 @@
           "outputHashing": "all"
         },
         "development": {
+          "fileReplacements": [
+            {
+              "replace": "panel/src/environments/environment.ts",
+              "with": "panel/src/environments/environment.development.ts"
+            }
+          ],
           "buildOptimizer": false,
           "optimization": false,
           "vendorChunk": true,

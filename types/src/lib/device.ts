@@ -8,11 +8,14 @@ export class Device {
   _id: any;
   id: string;
 
+  @Prop({ required: true })
+  title: string;
+
   @Prop({ required: true, unique: true })
   serial: string;
 
-  @Prop({ required: false })
-  region: number;
+  @Prop({ type: [String], default: [] })
+  tags: string[];
 
   connectedAt?: Date;
 }

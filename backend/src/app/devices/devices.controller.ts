@@ -13,13 +13,13 @@ export class DevicesController {
   }
 
   @Post()
-  newDevice(@Body() dto: Partial<Device>) {
-    const createdDevice = new this.deviceModel(dto);
-    return createdDevice.save();
-  }
-
-  @Put(':id')
-  updateDevice(@Body() dto: Partial<Device>, @Param('id') deviceId: string) {
-    return this.deviceModel.findByIdAndUpdate(deviceId, dto).exec();
+  save(@Body() dto: Partial<Device>) {
+    if (dto._id) {
+      const { _id, ...updatedDto } = dto;
+      return this.deviceModel.findByIdAndUpdate(_id, updatedDto).exec();
+    } else {
+      const createdDevice = new this.deviceModel(dto);
+      return createdDevice.save();
+    }
   }
 }

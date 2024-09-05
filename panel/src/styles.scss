@@ -1,1 +1,38 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$green-palette,
+    ),
+    typography: (
+      plain-family: 'Vazirmatn',
+      brand-family: 'Vazirmatn',
+    ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
+
+:root {
+  @include mat.all-component-themes($theme);
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Vazirmatn, 'Helvetica Neue', sans-serif;
+}
+
+.primary-toolbar {
+  background-color: mat.get-theme-color($theme, primary-container) !important;
+  color: mat.get-theme-color($theme, on-primary-container) !important;
+}
