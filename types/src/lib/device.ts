@@ -5,8 +5,8 @@ export type DeviceDocument = HydratedDocument<Device>;
 
 @Schema({ timestamps: true })
 export class Device {
-  _id: any;
-  id: string;
+  id: any;
+  _id: string;
 
   @Prop({ required: true })
   title: string;

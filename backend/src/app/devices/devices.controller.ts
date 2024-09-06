@@ -1,5 +1,12 @@
 import { Device } from '@device-management/types';
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -25,5 +32,10 @@ export class DevicesController {
         return createdDevice.save();
       }
     }
+  }
+
+  @Delete()
+  remove(@Query('ids') ids: string) {
+    return this.deviceModel.deleteMany({ _id: { $in: ids.split(',') } });
   }
 }

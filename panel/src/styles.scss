@@ -36,3 +36,17 @@ body {
   background-color: mat.get-theme-color($theme, primary-container) !important;
   color: mat.get-theme-color($theme, on-primary-container) !important;
 }
+
+.error-button {
+  @include mat.button-color($theme, $color-variant: error);
+}
+
+.primary-text {
+  color: mat.get-theme-color($theme, primary) !important;
+}
+.tertiary-text {
+  color: mat.get-theme-color($theme, tertiary) !important;
+}
+.error-text {
+  color: mat.get-theme-color($theme, error) !important;
+}

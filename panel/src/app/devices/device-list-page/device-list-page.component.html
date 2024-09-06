@@ -1,14 +1,41 @@
 <mat-toolbar fxLayoutGap="8">
-  <input id="searchbox" placeholder="جستجو..." [formControl]="searchControl" />
-  <span fxFlex></span>
-  <button mat-stroked-button (click)="openFormDialog(true)">
-    افزودن تجمیعی
-  </button>
-  <button mat-flat-button (click)="openFormDialog()">افزودن تکی</button>
+  @if (!hasSelection()) {
+    <input
+      id="searchbox"
+      placeholder="جستجو..."
+      [formControl]="searchControl"
+    />
+    <span fxFlex></span>
+    <button mat-stroked-button (click)="openFormDialog(undefined, true)">
+      افزودن تجمیعی
+    </button>
+    <button mat-flat-button (click)="openFormDialog()">افزودن تکی</button>
+  } @else {
+    <button
+      mat-icon-button
+      class="error-button"
+      (click)="table.clearSelection()"
+    >
+      <mat-icon fontIcon="cancel" class="error-text" />
+    </button>
+    <span fxFlex> {{ selectedIds().length }} دستگاه انتخاب شده </span>
+    <button mat-icon-button (click)="upgrade()">
+      <mat-icon fontIcon="upgrade" />
+    </button>
+    <button mat-icon-button (click)="remove()">
+      <mat-icon fontIcon="delete" />
+    </button>
+  }
 </mat-toolbar>
 <main fxLayout="column">
   @if (data()) {
-    <app-table [dataSource]="data()!" />
+    <app-table
+      [dataSource]="data"
+      [selectedIds]="selectedIds"
+      (onEdit)="openFormDialog($event)"
+      (onRemove)="remove($event)"
+      (onUpgrade)="upgrade($event)"
+    />
   } @else {
     <mat-spinner [diameter]="32" />
   }
