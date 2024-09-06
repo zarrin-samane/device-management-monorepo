@@ -5,3 +5,13 @@ main {
     margin: auto;
   }
 }
+
+#searchbox {
+  font-family: inherit;
+  padding: 8px;
+  border-radius: 24px;
+  width: 300px;
+  outline: none;
+  border: 1px solid
+    var(--mdc-outlined-button-outline-color, var(--mat-app-outline));
+}

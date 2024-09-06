@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { SHARED } from '../../../shared';
@@ -7,7 +7,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DeviceFormDialogComponent } from '../../device-form-dialog/device-form-dialog.component';
+import { ConnectionStatus } from '../../../shared/pipes/connection-status.pipe';
 
 @Component({
   selector: 'app-table',
@@ -19,13 +21,23 @@ import { DeviceFormDialogComponent } from '../../device-form-dialog/device-form-
     MatChipsModule,
     MatButtonModule,
     MatIconModule,
+    MatCheckboxModule,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
 })
 export class TableComponent {
   readonly dialog = inject(MatDialog);
-  displayedColumns: string[] = ['title', 'serial', 'tags', 'actions'];
+  ConnectionStatus = ConnectionStatus
+  
+  displayedColumns: string[] = [
+    'checkbox',
+    'title',
+    'serial',
+    'tags',
+    'connectionAtStatus',
+    'actions',
+  ];
   @Input() dataSource: Device[];
 
   edit(device: Device) {

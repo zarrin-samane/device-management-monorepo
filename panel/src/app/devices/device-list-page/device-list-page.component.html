@@ -1,11 +1,14 @@
 <mat-toolbar fxLayoutGap="8">
-  <h2 fxFlex>لیست دستگاه‌ها</h2>
-  <button mat-stroked-button>افزودن تکی</button>
+  <input id="searchbox" placeholder="جستجو..." [formControl]="searchControl" />
+  <span fxFlex></span>
+  <button mat-stroked-button (click)="openFormDialog(true)">
+    افزودن تجمیعی
+  </button>
   <button mat-flat-button (click)="openFormDialog()">افزودن تکی</button>
 </mat-toolbar>
 <main fxLayout="column">
-  @if (query.data()) {
-    <app-table [dataSource]="query.data()!" />
+  @if (data()) {
+    <app-table [dataSource]="data()!" />
   } @else {
     <mat-spinner [diameter]="32" />
   }

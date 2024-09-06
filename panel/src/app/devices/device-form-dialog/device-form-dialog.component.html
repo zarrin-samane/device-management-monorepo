@@ -6,9 +6,15 @@
       <input matInput formControlName="title" />
     </mat-form-field>
     <mat-form-field>
-      <mat-label>سریال</mat-label>
+      <mat-label>{{data?.isRange ? 'از سریال' : 'سریال'}}</mat-label>
       <input matInput formControlName="serial" />
     </mat-form-field>
+    @if (data?.isRange) {
+      <mat-form-field>
+        <mat-label>تا سریال</mat-label>
+        <input matInput formControlName="toSerial" />
+      </mat-form-field>
+    }
     <mat-form-field class="example-chip-list">
       <mat-label>برچسب‌ها</mat-label>
       <mat-chip-grid #chipGrid>

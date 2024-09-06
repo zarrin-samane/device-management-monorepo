@@ -46,11 +46,14 @@ import { MatIconModule } from '@angular/material/icon';
 export class DeviceFormDialogComponent {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   readonly dialogRef = inject(MatDialogRef<DeviceFormDialogComponent>);
-  readonly data = inject<{ device?: Device }>(MAT_DIALOG_DATA);
+  readonly data? = inject<{ device?: Device; isRange?: boolean }>(
+    MAT_DIALOG_DATA
+  );
   readonly device = this.data?.device;
   formGroup: FormGroup;
   mutation = injectMutation((client) => ({
-    mutationFn: (dto: Device) => lastValueFrom(this.http.post('/devices', dto)),
+    mutationFn: (dto: Device | Device[]) =>
+      lastValueFrom(this.http.post('/devices', dto)),
     onSuccess: async () => {
       this.snack.open('با موفقیت ثبت شد', '', { duration: 3000 });
       this.dialogRef.close();
@@ -66,6 +69,7 @@ export class DeviceFormDialogComponent {
     this.formGroup = this.fb.group({
       title: [this.device?.title, Validators.required],
       serial: [this.device?.serial, Validators.required],
+      toSerial: [],
       tags: [
         this.device?.tags ? [...this.device.tags] : [],
         Validators.required,
@@ -77,10 +81,47 @@ export class DeviceFormDialogComponent {
     return this.formGroup.get('tags')?.value || [];
   }
 
+  get serialsArray() {
+    try {
+      const from = Number(
+        this.formGroup.get('serial')?.value?.replace(/-/g, '')
+      );
+      const to = Number(
+        this.formGroup.get('toSerial')?.value?.replace(/-/g, '')
+      );
+      const serials = [];
+      for (let serialNumber = from; serialNumber <= to; serialNumber++) {
+        serials.push(
+          serialNumber.toString().slice(0, 2) +
+            '-' +
+            serialNumber.toString().slice(2, 4) +
+            '-' +
+            serialNumber.toString().slice(4)
+        );
+      }
+      return serials;
+    } catch (error) {
+      return [];
+    }
+  }
+
   get dto() {
-    const dto: Device = this.formGroup.value;
-    if (this.device) dto._id = this.device._id;
-    return dto;
+    if (this.data?.isRange) {
+      const fv = this.formGroup.value;
+      const dtos: Device[] = this.serialsArray.map(
+        (x) =>
+          ({
+            serial: x,
+            tags: fv.tags,
+            title: fv.title,
+          } as Device)
+      );
+      return dtos;
+    } else {
+      const dto: Device = this.formGroup.value;
+      if (this.device) dto._id = this.device._id;
+      return dto;
+    }
   }
 
   addTag(event: MatChipInputEvent): void {
