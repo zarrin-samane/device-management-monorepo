@@ -1,4 +1,15 @@
-<mat-toolbar class="primary-toolbar">
+<mat-toolbar class="primary-toolbar" fxLayoutGap="16">
   <h1>آپدیتر پنل</h1>
+  &nbsp;
+  &nbsp;
+  &nbsp;
+  <button mat-button class="primary-text" routerLink="/devices">
+    <mat-icon fontIcon="router"/>
+    لیست دستگاه‌ها
+  </button>
+  <button mat-button class="primary-text" routerLink="/files">
+    <mat-icon fontIcon="folder open"/>
+    فایل منیجر
+  </button>
 </mat-toolbar>
 <router-outlet></router-outlet>

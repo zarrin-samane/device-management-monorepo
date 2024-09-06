@@ -16,7 +16,7 @@ export class DevicesController {
 
   @Get()
   getAll() {
-    return this.deviceModel.find().exec();
+    return this.deviceModel.find().sort({ createdAt: -1 }).exec();
   }
 
   @Post()

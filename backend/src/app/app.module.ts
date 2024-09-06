@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DevicesModule } from './devices/devices.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { DevicesModule } from './devices/devices.module';
       dbName: process.env.DB_NAME,
     }),
     DevicesModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
