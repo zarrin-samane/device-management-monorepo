@@ -32,6 +32,12 @@ body {
   font-family: Vazirmatn, 'Helvetica Neue', sans-serif;
 }
 
+*[matlistitemicon],
+*[matlistitemmeta] {
+  align-self: center !important;
+  margin-top: 0 !important;
+}
+
 .primary-toolbar {
   background-color: mat.get-theme-color($theme, primary-container) !important;
   color: mat.get-theme-color($theme, on-primary-container) !important;

@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev:backend": "nx run backend:serve",
-    "dev:panel": "nx run panel:serve"
+    "dev:backend": "nx run backend:serve --watch",
+    "dev:panel": "nx run panel:serve",
+    "deploy-backend": "nx run backend:build --skip-nx-cache; liara deploy --path=dist/backend",
+    "deploy-panel": "nx run panel:build --skip-nx-cache; liara deploy --path=dist/panel"
   },
   "private": true,
   "dependencies": {
@@ -25,6 +27,7 @@
     "@nestjs/mongoose": "^10.0.10",
     "@nestjs/platform-express": "^10.0.2",
     "@tanstack/angular-query-experimental": "^5.54.1",
+    "aws-sdk": "^2.1690.0",
     "axios": "^1.6.0",
     "mongoose": "^8.6.1",
     "reflect-metadata": "^0.1.13",

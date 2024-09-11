@@ -20,7 +20,9 @@
           {
             "glob": "**/*",
             "input": "panel/public"
-          }
+          },
+          "panel/src/liara_nginx.conf",
+          "panel/src/liara.json"
         ],
         "styles": ["panel/src/styles.scss"],
         "scripts": []

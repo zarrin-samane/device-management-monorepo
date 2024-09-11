@@ -1,0 +1,18 @@
+main {
+  padding: 24px;
+
+  mat-card {
+    box-shadow: none;
+    max-width: 960px;
+    margin: auto;
+
+    span[matListItemLine] {
+      direction: ltr;
+      text-align: right;
+    }
+  }
+
+  mat-spinner {
+    margin: auto;
+  }
+}

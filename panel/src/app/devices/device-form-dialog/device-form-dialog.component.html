@@ -6,7 +6,7 @@
       <input matInput formControlName="title" />
     </mat-form-field>
     <mat-form-field>
-      <mat-label>{{data?.isRange ? 'از سریال' : 'سریال'}}</mat-label>
+      <mat-label>{{ data?.isRange ? 'از سریال' : 'سریال' }}</mat-label>
       <input matInput formControlName="serial" />
     </mat-form-field>
     @if (data?.isRange) {
@@ -19,12 +19,12 @@
       <mat-label>برچسب‌ها</mat-label>
       <mat-chip-grid #chipGrid>
         @for (tag of tags; track tag) {
-        <mat-chip-row (removed)="removeTag(tag)">
-          {{ tag }}
-          <button matChipRemove>
-            <mat-icon fontIcon="cancel"></mat-icon>
-          </button>
-        </mat-chip-row>
+          <mat-chip-row (removed)="removeTag(tag)">
+            {{ tag }}
+            <button matChipRemove>
+              <mat-icon fontIcon="cancel"></mat-icon>
+            </button>
+          </mat-chip-row>
         }
         <input
           placeholder="برچست جدید..."
@@ -50,7 +50,7 @@
       [disabled]="mutation.isPending()"
       mat-flat-button
       type="submit"
-      (click)="mutation.mutate(dto)"
+      (click)="submit()"
     >
       ذخیره
     </button>

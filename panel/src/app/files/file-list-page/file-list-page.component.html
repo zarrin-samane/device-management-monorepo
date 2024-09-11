@@ -1,0 +1,37 @@
+<mat-toolbar>
+  <h2 fxFlex>لیست فایل‌ها</h2>
+  <input
+    style="display: none"
+    type="file"
+    #fileInput
+    (change)="upload($event)"
+  />
+  <button mat-flat-button (click)="fileInput.click()">اپلود فایل</button>
+</mat-toolbar>
+<main>
+  @if (query.data()) {
+    <mat-card>
+      <mat-card-content>
+        <mat-list>
+          @for (file of query.data(); track file._id) {
+            <mat-list-item>
+              <mat-icon matListItemIcon fontIcon="description" />
+              <span matListItemTitle>{{ file.title }}</span>
+              <span matListItemLine>{{ file.path }}</span>
+              <div fxLayout="row" matListItemMeta>
+                <a mat-icon-button href="{{ file.path | fileUrl }}" download>
+                  <mat-icon fontIcon="download" />
+                </a>
+                <button mat-icon-button (click)="remove(file)">
+                  <mat-icon fontIcon="delete" />
+                </button>
+              </div>
+            </mat-list-item>
+          }
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <mat-spinner [diameter]="36" />
+  }
+</main>

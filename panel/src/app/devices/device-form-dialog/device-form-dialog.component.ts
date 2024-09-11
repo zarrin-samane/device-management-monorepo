@@ -47,7 +47,7 @@ export class DeviceFormDialogComponent {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   readonly dialogRef = inject(MatDialogRef<DeviceFormDialogComponent>);
   readonly data? = inject<{ device?: Device; isRange?: boolean }>(
-    MAT_DIALOG_DATA
+    MAT_DIALOG_DATA,
   );
   readonly device = this.data?.device;
   formGroup: FormGroup;
@@ -64,16 +64,23 @@ export class DeviceFormDialogComponent {
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
-    private snack: MatSnackBar
+    private snack: MatSnackBar,
   ) {
     this.formGroup = this.fb.group({
       title: [this.device?.title, Validators.required],
-      serial: [this.device?.serial, Validators.required],
-      toSerial: [],
-      tags: [
-        this.device?.tags ? [...this.device.tags] : [],
-        Validators.required,
+      serial: [
+        this.device?.serial,
+        [
+          Validators.required,
+          Validators.minLength(17),
+          Validators.maxLength(17),
+        ],
       ],
+      toSerial: [
+        undefined,
+        [Validators.maxLength(17), Validators.minLength(17)],
+      ],
+      tags: [this.device?.tags ? [...this.device.tags] : []],
     });
   }
 
@@ -84,19 +91,20 @@ export class DeviceFormDialogComponent {
   get serialsArray() {
     try {
       const from = Number(
-        this.formGroup.get('serial')?.value?.replace(/-/g, '')
+        this.formGroup.get('serial')?.value?.replace(/-/g, ''),
       );
       const to = Number(
-        this.formGroup.get('toSerial')?.value?.replace(/-/g, '')
+        this.formGroup.get('toSerial')?.value?.replace(/-/g, ''),
       );
       const serials = [];
       for (let serialNumber = from; serialNumber <= to; serialNumber++) {
+        const numberString = serialNumber.toString().padStart(14, '0');
         serials.push(
-          serialNumber.toString().slice(0, 2) +
+          numberString.slice(0, 2) +
             '-' +
-            serialNumber.toString().slice(2, 4) +
+            numberString.slice(2, 4) +
             '-' +
-            serialNumber.toString().slice(4)
+            numberString.slice(4),
         );
       }
       return serials;
@@ -114,7 +122,7 @@ export class DeviceFormDialogComponent {
             serial: x,
             tags: fv.tags,
             title: fv.title,
-          } as Device)
+          }) as Device,
       );
       return dtos;
     } else {
@@ -136,5 +144,11 @@ export class DeviceFormDialogComponent {
     const tags: string[] = this.tags;
     tags.splice(tags.indexOf(tag), 1);
     this.formGroup.get('tags')?.setValue(tags);
+  }
+
+  submit() {
+    if (this.formGroup.valid) {
+      this.mutation.mutate(this.dto);
+    }
   }
 }

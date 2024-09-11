@@ -1,12 +1,5 @@
 import { Device } from '@device-management/types';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -16,7 +9,7 @@ export class DevicesController {
 
   @Get()
   getAll() {
-    return this.deviceModel.find().sort({ createdAt: -1 }).exec();
+    return this.deviceModel.find().sort({ createdAt: -1, serial: -1 }).exec();
   }
 
   @Post()

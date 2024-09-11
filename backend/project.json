@@ -21,6 +21,14 @@
           "buildTarget": "backend:build:production"
         }
       }
+    },
+    "build": {
+      "options": {
+        "assets": [
+          "backend/src/Dockerfile",
+          "backend/src/liara.json"
+        ]
+      }
     }
   }
 }
