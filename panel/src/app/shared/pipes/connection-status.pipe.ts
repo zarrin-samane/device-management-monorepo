@@ -11,7 +11,7 @@ export const connectionStatusText = {
   [ConnectionStatus.Null]: 'غیر‌فعال',
   [ConnectionStatus.Offline]: 'آفلاین',
   [ConnectionStatus.Pending]: 'در‌انتظار',
-  [ConnectionStatus.Online]: 'غیر‌فعال',
+  [ConnectionStatus.Online]: 'آنلاین',
 };
 
 @Pipe({
@@ -25,7 +25,7 @@ export class ConnectionStatusPipe implements PipeTransform {
       const hDiff = (Date.now() - new Date(value).valueOf()) / 1000 / 3600;
       if (hDiff < 2) status = ConnectionStatus.Online;
       else if (hDiff < 48) status = ConnectionStatus.Pending;
-      status = ConnectionStatus.Offline;
+      else status = ConnectionStatus.Offline;
     } else {
       status = ConnectionStatus.Null;
     }

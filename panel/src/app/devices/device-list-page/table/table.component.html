@@ -18,6 +18,16 @@
     <td mat-cell *matCellDef="let element">{{ element.serial }}</td>
   </ng-container>
 
+  <ng-container matColumnDef="version">
+    <th mat-header-cell *matHeaderCellDef>ورژن فریمور</th>
+    <td mat-cell *matCellDef="let element">
+      <button mat-stroked-button (click)="upgradeClick.emit(element)">
+        {{ element.version || 'بدون فریمور' }}
+        <mat-icon fontIcon="upgrade" />
+      </button>
+    </td>
+  </ng-container>
+
   <ng-container matColumnDef="tags">
     <th mat-header-cell *matHeaderCellDef>برچسب‌ها</th>
     <td mat-cell *matCellDef="let element">
@@ -33,7 +43,7 @@
     <th mat-header-cell *matHeaderCellDef>وضعیت</th>
     <td mat-cell *matCellDef="let element">
       <div fxLayout="row" fxLayoutAlign="start center">
-        @switch (element.connectionAt | connectionStatus) {
+        @switch (element.connectedAt | connectionStatus) {
           @case (ConnectionStatus.Null) {
             <mat-icon fontIcon="fiber_manual_record" />
           }
@@ -47,7 +57,7 @@
             <mat-icon fontIcon="fiber_manual_record" class="green" />
           }
         }
-        {{ element.connectionAt | connectionStatus: true }}
+        {{ element.connectedAt | connectionStatus: true }}
       </div>
     </td>
   </ng-container>
@@ -56,13 +66,10 @@
     <th mat-header-cell *matHeaderCellDef></th>
     <td mat-cell *matCellDef="let element">
       <div fxLayout="row" fxLayoutAlign="flex-end center">
-        <button mat-icon-button (click)="onUpgrade.emit(element)">
-          <mat-icon fontIcon="upgrade" />
-        </button>
-        <button mat-icon-button (click)="onEdit.emit(element)">
+        <button mat-icon-button (click)="editClick.emit(element)">
           <mat-icon fontIcon="edit" />
         </button>
-        <button mat-icon-button (click)="onRemove.emit(element)">
+        <button mat-icon-button (click)="removeClick.emit(element)">
           <mat-icon fontIcon="delete" />
         </button>
       </div>

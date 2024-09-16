@@ -10,10 +10,10 @@ import { File as MyFile } from '@device-management/types';
 export class FilesService {
   constructor(private http: HttpClient) {}
 
-  upload(file: File, name: string) {
+  upload(file: File, title: string, version: number) {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<MyFile>(`/files/upload/${name}`, formData).toPromise();
+    return this.http.post<MyFile>(`/files/upload/${title}/${version}`, formData).toPromise();
   }
 
   getFileUrl(key: string) {

@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DevicesModule } from './devices/devices.module';
 import { FilesModule } from './files/files.module';
+import { UpdateModule } from './update/update.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { FilesModule } from './files/files.module';
     }),
     DevicesModule,
     FilesModule,
+    UpdateModule,
   ],
   controllers: [AppController],
   providers: [AppService],

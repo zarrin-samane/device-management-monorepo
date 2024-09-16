@@ -29,6 +29,7 @@
     "@tanstack/angular-query-experimental": "^5.54.1",
     "aws-sdk": "^2.1690.0",
     "axios": "^1.6.0",
+    "md5": "^2.3.0",
     "mongoose": "^8.6.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",

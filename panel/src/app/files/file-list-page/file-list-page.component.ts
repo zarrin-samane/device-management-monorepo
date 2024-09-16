@@ -19,6 +19,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { AlertDialogComponent } from '../../shared/components/alert-dialog/alert-dialog.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FileFormDialogComponent } from '../file-form-dialog/file-form-dialog.component';
 
 @Component({
   selector: 'app-file-list-page',
@@ -43,8 +44,8 @@ export class FileListPageComponent {
   }));
 
   uploadMutation = injectMutation((client) => ({
-    mutationFn: (dto: { file: any; name: string }) =>
-      this.filesService.upload(dto.file, dto.name),
+    mutationFn: (dto: { file: any; title: string; version: number }) =>
+      this.filesService.upload(dto.file, dto.title, dto.version),
     onSuccess: async () => {
       this.snack.open('فایل با موفقیت ایجاد شد', '', { duration: 3000 });
       client.invalidateQueries({ queryKey: ['files'] });
@@ -84,16 +85,19 @@ export class FileListPageComponent {
   upload(event: any) {
     const file = event.target.files[0];
     this.dialog
-      .open(PromptDialogComponent, {
-        data: {
-          title: 'آپلود فایل',
-          label: 'عنوان فایل',
-        },
-      })
+      .open(FileFormDialogComponent)
       .afterClosed()
-      .subscribe((name) => {
-        if (name) {
-          this.uploadMutation.mutate({ name, file });
+      .subscribe((dto: { title: string; version: number }) => {
+        if (dto) {
+          if (this.query.data()?.find((x) => x.version === dto.version)) {
+            this.snack.open('ورژن وارد شده تکراری است', '', { duration: 3000 });
+          } else {
+            this.uploadMutation.mutate({
+              title: dto.title,
+              version: dto.version,
+              file,
+            });
+          }
         }
       });
   }

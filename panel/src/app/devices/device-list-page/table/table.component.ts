@@ -41,22 +41,21 @@ export class TableComponent {
   readonly dialog = inject(MatDialog);
   ConnectionStatus = ConnectionStatus;
   checkboxes = viewChildren(MatCheckbox);
-  @Output() onEdit = new EventEmitter<Device>();
-  @Output() onUpgrade = new EventEmitter<Device>();
-  @Output() onRemove = new EventEmitter<Device>();
+  @Output() editClick = new EventEmitter<Device>();
+  @Output() upgradeClick = new EventEmitter<Device>();
+  @Output() removeClick = new EventEmitter<Device>();
 
   displayedColumns: string[] = [
     'checkbox',
     'title',
     'serial',
+    'version',
     'tags',
     'connectionAtStatus',
     'actions',
   ];
   @Input() dataSource: Signal<Device[] | undefined>;
   @Input() selectedIds: WritableSignal<string[]>;
-
-  constructor() {}
 
   clearSelection() {
     this.selectedIds.set([]);

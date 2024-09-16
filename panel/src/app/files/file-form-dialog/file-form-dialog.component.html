@@ -1,0 +1,18 @@
+<form [formGroup]="formGroup" (ngSubmit)="submit()">
+  <h4 matDialogTitle>آپلود فایل</h4>
+  <mat-dialog-content fxLayout="column">
+    <mat-form-field>
+      <mat-label>نام فایل</mat-label>
+      <input matInput formControlName="title" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>ورژن</mat-label>
+      <input matInput type="number" formControlName="version" />
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button mat-dialog-close type="button">انصراف</button>
+    <button mat-flat-button type="submit">تایید</button>
+  </mat-dialog-actions>
+</form>

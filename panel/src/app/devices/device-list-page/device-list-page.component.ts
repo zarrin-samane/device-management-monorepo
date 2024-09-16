@@ -20,6 +20,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { AlertDialogComponent } from '../../shared/components/alert-dialog/alert-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FileListDialogComponent } from '../../files/file-list-dialog/file-list-dialog.component';
 
 @Component({
   selector: 'app-device-list-page',
@@ -40,8 +41,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class DeviceListPageComponent {
   searchControl = new FormControl('');
+  tagControl = new FormControl(null);
+  statusControl = new FormControl(null);
   @ViewChild(TableComponent) table: TableComponent;
   searchText = toSignal(this.searchControl.valueChanges, { initialValue: '' });
+  selectedTag = toSignal<string | null>(this.tagControl.valueChanges, {
+    initialValue: null,
+  });
   selectedIds = signal<string[]>([]);
   selectedDevices = computed(() => {
     const selectedIds = this.selectedIds();
@@ -70,16 +76,41 @@ export class DeviceListPageComponent {
     },
   }));
 
+  upgradeMutation = injectMutation((client) => ({
+    mutationFn: (dto: { ids: string[]; version: number }) =>
+      lastValueFrom(
+        this.http.get(`/devices/upgrade/${dto.version}`, {
+          params: { ids: dto.ids.join(',') },
+        }),
+      ),
+    onSuccess: async () => {
+      this.snack.open('بروزرسانی با موفقیت انجام شد', '', { duration: 3000 });
+      client.invalidateQueries({ queryKey: ['devices'] });
+    },
+  }));
+
   data = computed(() => {
     const searchText = this.searchText();
-    const data = this.query.data();
-    if (searchText && data) {
-      return data.filter(
-        (x) =>
-          x.serial.search(searchText) > -1 || x.title.search(searchText) > -1,
-      );
+    const selectedTag = this.selectedTag();
+    let data = this.query.data();
+    if (data) {
+      if (searchText)
+        data = data.filter(
+          (x) =>
+            x.serial.search(searchText) > -1 || x.title.search(searchText) > -1,
+        );
+      if (selectedTag && selectedTag != 'null')
+        data = data.filter((x) => x.tags.includes(selectedTag));
     }
     return data;
+  });
+
+  tags = computed(() => {
+    const data = this.query.data();
+    if (data) {
+      return [...new Set(...data.map((x) => x.tags || []))];
+    }
+    return [];
   });
 
   constructor(
@@ -92,7 +123,19 @@ export class DeviceListPageComponent {
     this.dialog.open(DeviceFormDialogComponent, { data: { isRange, device } });
   }
 
-  upgrade(device?: Device) {}
+  upgrade(device?: Device) {
+    this.dialog
+      .open(FileListDialogComponent)
+      .afterClosed()
+      .subscribe((file) => {
+        if (file?.version) {
+          this.upgradeMutation.mutate({
+            ids: device ? [device._id] : this.selectedIds(),
+            version: file.version,
+          });
+        }
+      });
+  }
 
   remove(device?: Device) {
     this.dialog

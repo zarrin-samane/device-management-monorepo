@@ -31,17 +31,19 @@ export class FilesController {
     res.sendFile(path, { root: '../files' });
   }
 
-  @Post('upload/:title')
+  @Post('upload/:title/:version')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile() file: any,
     @Body() body,
     @Param('title') title: string,
+    @Param('version') version: string,
   ) {
     const savedFile = await this.upload(file);
     const createdDevice = new this.fileModel({
       path: savedFile.Key,
       title,
+      version: Number(version),
     });
     return createdDevice.save();
   }
@@ -49,7 +51,7 @@ export class FilesController {
   @Delete(':id')
   async delete(@Param('id') id: string) {
     const file = await this.fileModel.findByIdAndDelete(id).exec();
-    console.log(file)
+    console.log(file);
     if (file) {
       this.client.deleteObject({
         Bucket: process.env.LIARA_BUCKET_NAME,

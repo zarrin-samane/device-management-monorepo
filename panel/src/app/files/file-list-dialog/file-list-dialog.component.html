@@ -1,0 +1,14 @@
+<h3 mat-dialog-title>انتخاب فایل</h3>
+<mat-dialog-content>
+  @if (query.data()) {
+    <mat-nav-list>
+      @for (file of query.data(); track file._id) {
+        <mat-list-item [mat-dialog-close]="file">
+          <span matListItemTitle>{{ file.title }}</span>
+          <span matListItemLine>{{ file.version }}</span>
+        </mat-list-item>
+        <mat-divider />
+      }
+    </mat-nav-list>
+  }
+</mat-dialog-content>

@@ -8,6 +8,9 @@ export class File {
   @Prop({ required: true })
   title: string;
 
+  @Prop({ required: true, unique: true })
+  version: number;
+
   @Prop({ required: true })
   path: string;
 }

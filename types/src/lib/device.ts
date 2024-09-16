@@ -14,6 +14,9 @@ export class Device {
   @Prop({ required: true, unique: true })
   serial: string;
 
+  @Prop()
+  version?: number;
+
   @Prop({ type: [String], default: [] })
   tags: string[];
 

@@ -1,5 +1,13 @@
 import { Device } from '@device-management/types';
-import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -25,6 +33,16 @@ export class DevicesController {
         return createdDevice.save();
       }
     }
+  }
+
+  @Get('upgrade/:version')
+  upgrade(@Query('ids') ids: string, @Param('version') version: string) {
+    return this.deviceModel
+      .updateMany(
+        { _id: { $in: ids.split(',') } },
+        { version: Number(version) },
+      )
+      .exec();
   }
 
   @Delete()

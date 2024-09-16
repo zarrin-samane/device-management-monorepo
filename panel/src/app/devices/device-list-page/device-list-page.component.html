@@ -1,10 +1,25 @@
 <mat-toolbar fxLayoutGap="8">
   @if (!hasSelection()) {
     <input
-      id="searchbox"
+      class="minimal-input"
       placeholder="جستجو..."
       [formControl]="searchControl"
+      style="width: 300px;"
     />
+
+    <select [formControl]="tagControl" class="minimal-input">
+      <option [value]="null">همه برچسب‌ها</option>
+      @for (tag of tags(); track tag) {
+        <option [value]="tag">{{ tag }}</option>
+      }
+    </select>
+
+    <select [formControl]="tagControl" class="minimal-input">
+      <option [value]="null">همه برچسب‌ها</option>
+      @for (tag of tags(); track tag) {
+        <option [value]="tag">{{ tag }}</option>
+      }
+    </select>
     <span fxFlex></span>
     <button mat-stroked-button (click)="openFormDialog(undefined, true)">
       افزودن تجمیعی
@@ -32,9 +47,9 @@
     <app-table
       [dataSource]="data"
       [selectedIds]="selectedIds"
-      (onEdit)="openFormDialog($event)"
-      (onRemove)="remove($event)"
-      (onUpgrade)="upgrade($event)"
+      (editClick)="openFormDialog($event)"
+      (removeClick)="remove($event)"
+      (upgradeClick)="upgrade($event)"
     />
   } @else {
     <mat-spinner [diameter]="32" />
