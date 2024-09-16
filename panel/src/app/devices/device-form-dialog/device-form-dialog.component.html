@@ -1,13 +1,20 @@
 <form [formGroup]="formGroup">
   <h4 mat-dialog-title>ایجاد دستگاه جدید</h4>
-  <mat-dialog-content fxLayout="column">
+  <mat-dialog-content fxLayout="column" fxLayoutGap="8">
     <mat-form-field>
       <mat-label>عنوان</mat-label>
       <input matInput formControlName="title" />
     </mat-form-field>
     <mat-form-field>
       <mat-label>{{ data?.isRange ? 'از سریال' : 'سریال' }}</mat-label>
-      <input matInput formControlName="serial" />
+      <input matInput formControlName="serial" class="ltr" />
+      @let serialErrors = formGroup.controls['serial'].errors;
+      @if (serialErrors) {
+        <mat-error>
+          فقط از اعداد انگلیسی و به صورت 
+          <span class="ltr">12-34-56-12345678</span>
+        </mat-error>
+      }
     </mat-form-field>
     @if (data?.isRange) {
       <mat-form-field>

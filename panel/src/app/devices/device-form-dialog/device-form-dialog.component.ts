@@ -25,6 +25,8 @@ import { lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 
+const SERIAL_PATTERN = /^\d{2}-\d{2}-\d{2}-\d{8}$/;
+
 @Component({
   selector: 'app-device-form-dialog',
   standalone: true,
@@ -59,6 +61,9 @@ export class DeviceFormDialogComponent {
       this.dialogRef.close();
       client.invalidateQueries({ queryKey: ['devices'] });
     },
+    onError: (error: any) => {
+      this.snack.open(error.error.message, '', { duration: 3000 });
+    },
   }));
 
   constructor(
@@ -70,16 +75,9 @@ export class DeviceFormDialogComponent {
       title: [this.device?.title, Validators.required],
       serial: [
         this.device?.serial,
-        [
-          Validators.required,
-          Validators.minLength(17),
-          Validators.maxLength(17),
-        ],
+        [Validators.required, Validators.pattern(SERIAL_PATTERN)],
       ],
-      toSerial: [
-        undefined,
-        [Validators.maxLength(17), Validators.minLength(17)],
-      ],
+      toSerial: [undefined, [Validators.pattern(SERIAL_PATTERN)]],
       tags: [this.device?.tags ? [...this.device.tags] : []],
     });
   }
@@ -104,7 +102,9 @@ export class DeviceFormDialogComponent {
             '-' +
             numberString.slice(2, 4) +
             '-' +
-            numberString.slice(4),
+            numberString.slice(4, 6) +
+            '-' +
+            numberString.slice(6),
         );
       }
       return serials;

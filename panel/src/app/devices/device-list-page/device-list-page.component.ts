@@ -108,7 +108,9 @@ export class DeviceListPageComponent {
   tags = computed(() => {
     const data = this.query.data();
     if (data) {
-      return [...new Set(...data.map((x) => x.tags || []))];
+      const tags = data.map((x) => x.tags || []).flat();
+      console.log(tags);
+      return [...new Set(tags)];
     }
     return [];
   });

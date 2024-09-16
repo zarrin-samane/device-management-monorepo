@@ -1,6 +1,7 @@
 import { Device } from '@device-management/types';
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
   Get,
@@ -21,17 +22,21 @@ export class DevicesController {
   }
 
   @Post()
-  save(@Body() dto: Partial<Device> | Partial<Device>[]) {
-    if (Array.isArray(dto)) {
-      return this.deviceModel.insertMany(dto);
-    } else {
-      if (dto._id) {
-        const { _id, ...updatedDto } = dto;
-        return this.deviceModel.findByIdAndUpdate(_id, updatedDto).exec();
+  async save(@Body() dto: Partial<Device> | Partial<Device>[]) {
+    try {
+      if (Array.isArray(dto)) {
+        return await this.deviceModel.insertMany(dto);
       } else {
-        const createdDevice = new this.deviceModel(dto);
-        return createdDevice.save();
+        if (dto._id) {
+          const { _id, ...updatedDto } = dto;
+          return await this.deviceModel.findByIdAndUpdate(_id, updatedDto).exec();
+        } else {
+          const createdDevice = new this.deviceModel(dto);
+          return await createdDevice.save();
+        }
       }
+    } catch (error) {
+      if (error.code === 11000) throw new ConflictException('سریال وارد شده تکراری')
     }
   }
 

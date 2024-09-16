@@ -38,6 +38,11 @@ body {
   margin-top: 0 !important;
 }
 
+.ltr {
+  direction: ltr;
+  display: inline-block;
+}
+
 .primary-toolbar {
   background-color: mat.get-theme-color($theme, primary-container) !important;
   color: mat.get-theme-color($theme, on-primary-container) !important;

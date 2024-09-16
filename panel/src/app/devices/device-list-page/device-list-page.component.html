@@ -13,13 +13,7 @@
         <option [value]="tag">{{ tag }}</option>
       }
     </select>
-
-    <select [formControl]="tagControl" class="minimal-input">
-      <option [value]="null">همه برچسب‌ها</option>
-      @for (tag of tags(); track tag) {
-        <option [value]="tag">{{ tag }}</option>
-      }
-    </select>
+    
     <span fxFlex></span>
     <button mat-stroked-button (click)="openFormDialog(undefined, true)">
       افزودن تجمیعی
