@@ -21,6 +21,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { AlertDialogComponent } from '../../shared/components/alert-dialog/alert-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FileListDialogComponent } from '../../files/file-list-dialog/file-list-dialog.component';
+import { ConnectionStatusText } from '../../shared/pipes/connection-status.pipe';
+import {
+  ConnectionStatus,
+  getDeviceStatus,
+} from '../../shared/functions/get-device-status';
 
 @Component({
   selector: 'app-device-list-page',
@@ -40,6 +45,8 @@ import { FileListDialogComponent } from '../../files/file-list-dialog/file-list-
   styleUrl: './device-list-page.component.scss',
 })
 export class DeviceListPageComponent {
+  ConnectionStatus = ConnectionStatus;
+  ConnectionStatusText = ConnectionStatusText;
   searchControl = new FormControl('');
   tagControl = new FormControl(null);
   statusControl = new FormControl(null);
@@ -48,6 +55,12 @@ export class DeviceListPageComponent {
   selectedTag = toSignal<string | null>(this.tagControl.valueChanges, {
     initialValue: null,
   });
+  selectedStatus = toSignal<ConnectionStatus | null>(
+    this.statusControl.valueChanges,
+    {
+      initialValue: null,
+    },
+  );
   selectedIds = signal<string[]>([]);
   selectedDevices = computed(() => {
     const selectedIds = this.selectedIds();
@@ -92,6 +105,7 @@ export class DeviceListPageComponent {
   data = computed(() => {
     const searchText = this.searchText();
     const selectedTag = this.selectedTag();
+    const selectedStatus = this.selectedStatus();
     let data = this.query.data();
     if (data) {
       if (searchText)
@@ -101,6 +115,11 @@ export class DeviceListPageComponent {
         );
       if (selectedTag && selectedTag != 'null')
         data = data.filter((x) => x.tags.includes(selectedTag));
+
+      if (selectedStatus != null && selectedStatus?.toString() !== 'null')
+        data = data.filter(
+          (x) => getDeviceStatus(x.connectedAt) === Number(selectedStatus),
+        );
     }
     return data;
   });
@@ -109,7 +128,6 @@ export class DeviceListPageComponent {
     const data = this.query.data();
     if (data) {
       const tags = data.map((x) => x.tags || []).flat();
-      console.log(tags);
       return [...new Set(tags)];
     }
     return [];

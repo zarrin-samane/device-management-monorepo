@@ -21,8 +21,18 @@
   <ng-container matColumnDef="version">
     <th mat-header-cell *matHeaderCellDef>ورژن فریمور</th>
     <td mat-cell *matCellDef="let element">
-      <button mat-stroked-button (click)="upgradeClick.emit(element)">
-        {{ element.version || 'بدون فریمور' }}
+      @let isUpdate = element.currentVersion === element.version;
+      <span
+        [ngClass]="{ 'error-text': !isUpdate }"
+        [matTooltip]="isUpdate ? '' : 'در انتظار آبدیت به ' + element.version"
+      >
+        {{ element.currentVersion || 'بدون فریمور' }}
+      </span>
+      <button
+        mat-icon-button
+        (click)="upgradeClick.emit(element)"
+        style="vertical-align: middle"
+      >
         <mat-icon fontIcon="upgrade" />
       </button>
     </td>
@@ -42,7 +52,12 @@
   <ng-container matColumnDef="connectionAtStatus">
     <th mat-header-cell *matHeaderCellDef>وضعیت</th>
     <td mat-cell *matCellDef="let element">
-      <div fxLayout="row" fxLayoutAlign="start center">
+      <div
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        matTooltip="{{ element.connectedAt | pdate }}"
+        matTooltipPosition="before"
+      >
         @switch (element.connectedAt | connectionStatus) {
           @case (ConnectionStatus.Null) {
             <mat-icon fontIcon="fiber_manual_record" />

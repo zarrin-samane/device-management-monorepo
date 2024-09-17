@@ -17,6 +17,9 @@ export class Device {
   @Prop()
   version?: number;
 
+  @Prop()
+  currentVersion?: number;
+
   @Prop({ type: [String], default: [] })
   tags: string[];
 

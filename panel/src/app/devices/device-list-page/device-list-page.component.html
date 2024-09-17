@@ -4,7 +4,7 @@
       class="minimal-input"
       placeholder="جستجو..."
       [formControl]="searchControl"
-      style="width: 300px;"
+      style="width: 300px"
     />
 
     <select [formControl]="tagControl" class="minimal-input">
@@ -13,7 +13,23 @@
         <option [value]="tag">{{ tag }}</option>
       }
     </select>
-    
+
+    <select [formControl]="statusControl" class="minimal-input">
+      <option [value]="null">همه وضعیت‌ها</option>
+      <option [value]="ConnectionStatus.Online">
+        {{ ConnectionStatusText[ConnectionStatus.Online] }}
+      </option>
+      <option [value]="ConnectionStatus.Pending">
+        {{ ConnectionStatusText[ConnectionStatus.Pending] }}
+      </option>
+      <option [value]="ConnectionStatus.Offline">
+        {{ ConnectionStatusText[ConnectionStatus.Offline] }}
+      </option>
+      <option [value]="ConnectionStatus.Null">
+        {{ ConnectionStatusText[ConnectionStatus.Null] }}
+      </option>
+    </select>
+
     <span fxFlex></span>
     <button mat-stroked-button (click)="openFormDialog(undefined, true)">
       افزودن تجمیعی
