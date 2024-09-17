@@ -20,6 +20,7 @@ export class Device {
   @Prop({ type: [String], default: [] })
   tags: string[];
 
+  @Prop()
   connectedAt?: Date;
 }
 
