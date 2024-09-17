@@ -24,7 +24,7 @@ export class UpdateController {
     @Param('version') version: string,
   ) {
     const device = await this.deviceModel
-      .findOneAndUpdate({ serial }, { connectedAt: new Date() })
+      .findOneAndUpdate({ serial }, { connectedAt: new Date(), currentVersion: Number(version) })
       .exec();
     if (!device) return ERROR_TEXT + 'device not found.';
     if (!device.version || device.version.toString() === version)
