@@ -8,6 +8,7 @@ import { DevicesModule } from './devices/devices.module';
 import { FilesModule } from './files/files.module';
 import { UpdateModule } from './update/update.module';
 import { SchemasModule } from './schemas/schemas.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SchemasModule } from './schemas/schemas.module';
       dbName: process.env.DB_NAME,
     }),
     SchemasModule,
+    AuthModule,
     DevicesModule,
     FilesModule,
     UpdateModule,
