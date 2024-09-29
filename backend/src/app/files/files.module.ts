@@ -1,12 +1,9 @@
 import { Module } from '@nestjs/common';
 import { FilesController } from './files.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { File, FileSchema } from '@device-management/types';
+import { SchemasModule } from '../schemas/schemas.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: File.name, schema: FileSchema }]),
-  ],
+  imports: [SchemasModule],
   controllers: [FilesController],
 })
 export class FilesModule {}

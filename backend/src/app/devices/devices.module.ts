@@ -1,12 +1,9 @@
 import { Module } from '@nestjs/common';
 import { DevicesController } from './devices.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Device, DeviceSchema } from '@device-management/types';
+import { SchemasModule } from '../schemas/schemas.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
-  ],
+  imports: [SchemasModule],
   controllers: [DevicesController],
 })
 export class DevicesModule {}

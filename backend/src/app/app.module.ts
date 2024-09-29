@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { DevicesModule } from './devices/devices.module';
 import { FilesModule } from './files/files.module';
 import { UpdateModule } from './update/update.module';
+import { SchemasModule } from './schemas/schemas.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UpdateModule } from './update/update.module';
     MongooseModule.forRoot(process.env.DB_URI, {
       dbName: process.env.DB_NAME,
     }),
+    SchemasModule,
     DevicesModule,
     FilesModule,
     UpdateModule,
