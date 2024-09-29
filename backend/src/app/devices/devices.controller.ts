@@ -29,14 +29,17 @@ export class DevicesController {
       } else {
         if (dto._id) {
           const { _id, ...updatedDto } = dto;
-          return await this.deviceModel.findByIdAndUpdate(_id, updatedDto).exec();
+          return await this.deviceModel
+            .findByIdAndUpdate(_id, updatedDto)
+            .exec();
         } else {
           const createdDevice = new this.deviceModel(dto);
           return await createdDevice.save();
         }
       }
     } catch (error) {
-      if (error.code === 11000) throw new ConflictException('سریال وارد شده تکراری')
+      if (error.code === 11000)
+        throw new ConflictException('سریال وارد شده تکراری');
     }
   }
 
@@ -50,8 +53,8 @@ export class DevicesController {
       .exec();
   }
 
-  @Delete()
-  remove(@Query('ids') ids: string) {
-    return this.deviceModel.deleteMany({ _id: { $in: ids.split(',') } });
+  @Post('remove')
+  remove(@Body() ids: string[]) {
+    return this.deviceModel.deleteMany({ _id: { $in: ids } });
   }
 }

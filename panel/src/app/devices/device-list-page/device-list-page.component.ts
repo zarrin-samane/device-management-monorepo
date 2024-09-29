@@ -79,9 +79,10 @@ export class DeviceListPageComponent {
   removeMutation = injectMutation((client) => ({
     mutationFn: (dto: Device[]) =>
       lastValueFrom(
-        this.http.delete('/devices', {
-          params: { ids: dto.map((x) => x._id).join(',') },
-        }),
+        this.http.post(
+          '/devices/remove',
+          dto.map((x) => x._id),
+        ),
       ),
     onSuccess: async () => {
       this.snack.open('عملیات حذف با موفقیت ثبت شد', '', { duration: 3000 });
