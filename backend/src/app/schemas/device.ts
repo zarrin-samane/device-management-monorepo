@@ -8,6 +8,7 @@ export const DeviceSchema = new mongoose.Schema<Device>(
     version: { type: Number, required: false },
     currentVersion: { type: Number, required: false },
     tags: { type: [String], default: [] },
+    details: { type: mongoose.Schema.Types.Mixed, required: false },
     connectedAt: { type: Date, required: false },
   },
   {

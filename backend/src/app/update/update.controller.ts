@@ -1,14 +1,16 @@
 import { Device, File } from '@device-management/types';
-import { Controller, Get, Param, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Res } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Response } from 'express';
 import { default as md5 } from 'md5';
 import { Model } from 'mongoose';
 import fetch from 'node-fetch';
+import { Public } from '../auth/public.decorator';
 
 const ERROR_TEXT = 'exit update: ';
 const STORAGE_BASE_URL = `https://${process.env.LIARA_BUCKET_NAME}.${process.env.LIARA_BUCKET_ENDPOINT}`;
 
+@Public()
 @Controller('update')
 export class UpdateController {
   codes = new Map<string, string>();
@@ -22,12 +24,25 @@ export class UpdateController {
   async check(
     @Param('serial') serial: string,
     @Param('version') version: string,
+    @Query() query,
   ) {
     const device = await this.deviceModel
-      .findOneAndUpdate({ serial }, { connectedAt: new Date(), currentVersion: Number(version) })
+      .findOneAndUpdate(
+        { serial },
+        { connectedAt: new Date(), currentVersion: Number(version) },
+      )
       .exec();
     if (!device) return ERROR_TEXT + 'device not found.';
-    if (!device.version || device.version.toString() === version)
+
+    if (query) {
+      this.deviceModel
+        .findByIdAndUpdate(device.id, {
+          details: { ...device.details, ...query },
+        })
+        .exec();
+    }
+
+    if (!device.version || device.version <= Number(version))
       return ERROR_TEXT + 'your version is last version.';
 
     let code;

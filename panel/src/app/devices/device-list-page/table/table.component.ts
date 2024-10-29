@@ -17,8 +17,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckbox, MatCheckboxModule } from '@angular/material/checkbox';
 import { ConnectionStatus } from '../../../shared/functions/get-device-status';
+import { MatListModule } from '@angular/material/list';
 
 @Component({
   selector: 'app-table',
@@ -32,6 +34,8 @@ import { ConnectionStatus } from '../../../shared/functions/get-device-status';
     MatIconModule,
     MatCheckboxModule,
     MatTooltipModule,
+    MatMenuModule,
+    MatListModule,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',

@@ -12,5 +12,7 @@ export class Device {
 
   tags: string[];
 
+  details?: { [key: string]: string | number };
+
   connectedAt?: Date;
 }
