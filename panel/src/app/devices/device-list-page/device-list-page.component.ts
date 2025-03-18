@@ -5,7 +5,7 @@ import {
   injectQuery,
 } from '@tanstack/angular-query-experimental';
 import { HttpClient } from '@angular/common/http';
-import { lastValueFrom } from 'rxjs';
+import { debounceTime, lastValueFrom } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
@@ -14,8 +14,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { SHARED } from '../../shared';
 import { DeviceFormDialogComponent } from '../device-form-dialog/device-form-dialog.component';
 import { TableComponent } from './table/table.component';
-import { Device } from '@device-management/types';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { Device, DeviceFilterDto } from '@device-management/types';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { AlertDialogComponent } from '../../shared/components/alert-dialog/alert-dialog.component';
@@ -39,6 +39,7 @@ import {
     MatDividerModule,
     MatProgressSpinner,
     ReactiveFormsModule,
+    FormsModule,
     MatIconModule,
   ],
   templateUrl: './device-list-page.component.html',
@@ -48,19 +49,54 @@ export class DeviceListPageComponent {
   ConnectionStatus = ConnectionStatus;
   ConnectionStatusText = ConnectionStatusText;
   searchControl = new FormControl('');
-  tagControl = new FormControl(null);
-  statusControl = new FormControl(null);
   @ViewChild(TableComponent) table: TableComponent;
-  searchText = toSignal(this.searchControl.valueChanges, { initialValue: '' });
-  selectedTag = toSignal<string | null>(this.tagControl.valueChanges, {
-    initialValue: null,
-  });
-  selectedStatus = toSignal<ConnectionStatus | null>(
-    this.statusControl.valueChanges,
+  searchText = toSignal(
+    this.searchControl.valueChanges.pipe(debounceTime(300)),
     {
-      initialValue: null,
+      initialValue: '',
     },
   );
+  selectedTag = signal<string | null>(null);
+  selectedStatus = signal<ConnectionStatus | null>(null);
+  page = signal(1);
+  limit = signal(100);
+
+  filter = computed(() => {
+    const dto: DeviceFilterDto = {};
+    dto.query = this.searchText() || undefined;
+    dto.tag = this.selectedTag() || undefined;
+    if (this.selectedStatus() != null) {
+      const status = Number(this.selectedStatus());
+      const min = new Date();
+      const max = new Date();
+      switch (status) {
+        case ConnectionStatus.Null:
+          dto.nullConnectionAt = true;
+          break;
+        case ConnectionStatus.Online:
+          min.setHours(min.getHours() - 2);
+          dto.minConnectionAt = min;
+          break;
+        case ConnectionStatus.Pending:
+          min.setHours(min.getHours() - 48);
+          max.setHours(min.getHours() - 2);
+          dto.minConnectionAt = min;
+          dto.maxConnectionAt = max;
+          break;
+        case ConnectionStatus.Offline:
+          max.setHours(min.getHours() - 48);
+          dto.minConnectionAt = new Date('1990-01-01');
+          dto.maxConnectionAt = max;
+          break;
+      }
+    }
+
+    dto.page = this.page();
+    dto.limit = this.limit();
+
+    return dto;
+  });
+
   selectedIds = signal<string[]>([]);
   selectedDevices = computed(() => {
     const selectedIds = this.selectedIds();
@@ -71,8 +107,20 @@ export class DeviceListPageComponent {
   });
 
   query = injectQuery(() => ({
-    queryKey: ['devices'],
-    queryFn: () => lastValueFrom(this.http.get<Device[]>(`/devices`)),
+    queryKey: ['devices', 'filter', this.filter()],
+    queryFn: () =>
+      lastValueFrom(
+        this.http.post<{ data: Device[]; count: number }>(
+          `/devices/filter`,
+          this.filter(),
+        ),
+      ),
+    refetchInterval: 20000,
+  }));
+
+  tagsQuery = injectQuery(() => ({
+    queryKey: ['devices', 'tags'],
+    queryFn: () => lastValueFrom(this.http.get<string[]>(`/devices/tags`)),
     refetchInterval: 20000,
   }));
 
@@ -104,33 +152,15 @@ export class DeviceListPageComponent {
   }));
 
   data = computed(() => {
-    const searchText = this.searchText();
-    const selectedTag = this.selectedTag();
-    const selectedStatus = this.selectedStatus();
-    let data = this.query.data();
-    if (data) {
-      if (searchText)
-        data = data.filter(
-          (x) =>
-            x.serial.search(searchText) > -1 || x.title.search(searchText) > -1,
-        );
-      if (selectedTag && selectedTag != 'null')
-        data = data.filter((x) => x.tags.includes(selectedTag));
-
-      if (selectedStatus != null && selectedStatus?.toString() !== 'null')
-        data = data.filter(
-          (x) => getDeviceStatus(x.connectedAt) === Number(selectedStatus),
-        );
-    }
-    return data;
+    return this.query.data()?.data;
   });
 
   tags = computed(() => {
-    const data = this.query.data();
-    if (data) {
-      const tags = data.map((x) => x.tags || []).flat();
-      return [...new Set(tags)];
-    }
+    // const data = this.query.data();
+    // if (data) {
+    //   const tags = data.map((x) => x.tags || []).flat();
+    //   return [...new Set(tags)];
+    // }
     return [];
   });
 

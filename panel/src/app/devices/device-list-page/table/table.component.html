@@ -87,7 +87,7 @@
           </button>
           <mat-menu #detailsMenu="matMenu">
             <mat-list>
-              @for (item of element.details | keyvalue; track $index;) {
+              @for (item of element.details | keyvalue; track $index) {
                 <mat-list-item style="width: 200px">
                   <span matListItemLine>{{ item.key }}</span>
                   <div matListItemMeta fxLayout="row">
@@ -111,3 +111,11 @@
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 </table>
+<mat-paginator
+  [pageIndex]="currentPage()"
+  (page)="pageChange($event)"
+  [length]="total()"
+  [pageSize]="100"
+  showFirstLastButtons
+>
+</mat-paginator>

@@ -1,4 +1,4 @@
-import { Device } from '@device-management/types';
+import { Device, DeviceFilterDto } from '@device-management/types';
 import {
   Body,
   ConflictException,
@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, RootFilterQuery } from 'mongoose';
 
 @Controller('devices')
 export class DevicesController {
@@ -19,6 +19,58 @@ export class DevicesController {
   @Get()
   getAll() {
     return this.deviceModel.find().sort({ createdAt: -1, serial: -1 }).exec();
+  }
+
+  @Post('filter')
+  async filter(@Body() dto: DeviceFilterDto) {
+    const filter: RootFilterQuery<Device> = {};
+
+    if (dto.query) {
+      filter.$or = [
+        { title: { $regex: dto.query, $options: 'i' } },
+        { serial: { $regex: dto.query, $options: 'i' } },
+      ];
+    }
+
+    if (dto.tag) {
+      filter.tags = { $in: dto.tag };
+    }
+
+    if (dto.nullConnectionAt) {
+      filter.connectedAt = null;
+    } else {
+      if (dto.minConnectionAt) {
+        filter.connectedAt = {
+          ...filter.connectedAt,
+          $gte: dto.minConnectionAt,
+        };
+      }
+
+      if (dto.maxConnectionAt) {
+        filter.connectedAt = {
+          ...filter.connectedAt,
+          $lte: dto.maxConnectionAt,
+        };
+      }
+    }
+
+    let data: Device[] = [];
+    const count = await this.deviceModel.countDocuments(filter).exec();
+    if (dto.limit) {
+      data = await this.deviceModel
+        .find(filter)
+        .sort({ createdAt: -1, serial: -1 })
+        .skip(((dto.page || 1) - 1) * dto.limit)
+        .limit(dto.limit)
+        .exec();
+    } else {
+      data = await this.deviceModel
+        .find(filter)
+        .sort({ createdAt: -1, serial: -1 })
+        .exec();
+    }
+
+    return { data, count };
   }
 
   @Post()
@@ -56,5 +108,16 @@ export class DevicesController {
   @Post('remove')
   remove(@Body() ids: string[]) {
     return this.deviceModel.deleteMany({ _id: { $in: ids } });
+  }
+
+  @Get('tags')
+  async getUniqueTags(): Promise<string[]> {
+    const result = await this.deviceModel.aggregate([
+      { $unwind: '$tags' }, // Flatten the tags array
+      { $group: { _id: '$tags' } }, // Group by tag to get unique values
+      { $project: { _id: 0, tag: '$_id' } }, // Format output
+    ]);
+
+    return result.map((item) => item.tag);
   }
 }

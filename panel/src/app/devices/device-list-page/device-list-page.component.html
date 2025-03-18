@@ -7,14 +7,14 @@
       style="width: 300px"
     />
 
-    <select [formControl]="tagControl" class="minimal-input">
+    <select [(ngModel)]="selectedTag" class="minimal-input">
       <option [value]="null">همه برچسب‌ها</option>
-      @for (tag of tags(); track tag) {
+      @for (tag of tagsQuery.data() || []; track tag) {
         <option [value]="tag">{{ tag }}</option>
       }
     </select>
 
-    <select [formControl]="statusControl" class="minimal-input">
+    <select [(ngModel)]="selectedStatus" class="minimal-input">
       <option [value]="null">همه وضعیت‌ها</option>
       <option [value]="ConnectionStatus.Online">
         {{ ConnectionStatusText[ConnectionStatus.Online] }}
@@ -54,12 +54,18 @@
 </mat-toolbar>
 <main fxLayout="column">
   @if (data()) {
+    <p>تعداد: {{ query.data()?.count }}</p>
     <app-table
       [dataSource]="data"
       [selectedIds]="selectedIds"
       (editClick)="openFormDialog($event)"
       (removeClick)="remove($event)"
       (upgradeClick)="upgrade($event)"
+      [total]="query.data()?.count"
+      (onPageChange)="page.set($event)"
+      (onPageSizeChange)="limit.set($event)"
+      [currentPage]="page() - 1"
+      [currentPageSize]="limit()"
     />
   } @else {
     <mat-spinner [diameter]="32" />

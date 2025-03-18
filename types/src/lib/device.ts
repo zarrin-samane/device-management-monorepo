@@ -16,3 +16,13 @@ export class Device {
 
   connectedAt?: Date;
 }
+
+export class DeviceFilterDto {
+  query?: string;
+  tag?: string;
+  nullConnectionAt?: boolean;
+  minConnectionAt?: Date;
+  maxConnectionAt?: Date;
+  page?: number;
+  limit?: number;
+}
