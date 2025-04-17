@@ -58,6 +58,7 @@ export class DeviceListPageComponent {
   );
   selectedTag = signal<string | null>(null);
   selectedStatus = signal<ConnectionStatus | null>(null);
+  selectedCurrentVersion = signal<number | null>(null);
   page = signal(1);
   limit = signal(100);
 
@@ -65,6 +66,10 @@ export class DeviceListPageComponent {
     const dto: DeviceFilterDto = {};
     dto.query = this.searchText() || undefined;
     dto.tag = this.selectedTag() || undefined;
+    const currentVersion = this.selectedCurrentVersion();
+    if (typeof currentVersion === 'number') {
+      dto.currentVersion = currentVersion;
+    }
     if (this.selectedStatus() != null) {
       const status = Number(this.selectedStatus());
       const min = new Date();

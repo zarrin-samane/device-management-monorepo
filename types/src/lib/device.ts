@@ -25,4 +25,5 @@ export class DeviceFilterDto {
   maxConnectionAt?: Date;
   page?: number;
   limit?: number;
+  currentVersion?: number;
 }

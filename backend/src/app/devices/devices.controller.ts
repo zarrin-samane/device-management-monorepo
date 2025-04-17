@@ -54,6 +54,10 @@ export class DevicesController {
       }
     }
 
+    if (dto.currentVersion !== undefined) {
+      filter.currentVersion = dto.currentVersion;
+    }
+
     let data: Device[] = [];
     const count = await this.deviceModel.countDocuments(filter).exec();
     if (dto.limit) {

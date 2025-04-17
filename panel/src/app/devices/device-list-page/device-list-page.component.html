@@ -14,6 +14,13 @@
       }
     </select>
 
+    <input
+      type="number"
+      [(ngModel)]="selectedCurrentVersion"
+      class="minimal-input"
+      placeholder="نسخه فعلی"
+    />
+
     <select [(ngModel)]="selectedStatus" class="minimal-input">
       <option [value]="null">همه وضعیت‌ها</option>
       <option [value]="ConnectionStatus.Online">
