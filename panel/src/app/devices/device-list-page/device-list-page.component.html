@@ -38,6 +38,21 @@
     </select>
 
     <span fxFlex></span>
+    
+    <!-- Hidden file input -->
+    <input
+      #fileInput
+      type="file"
+      accept=".csv"
+      style="display: none"
+      (change)="uploadCsv($event)"
+    />
+    
+    <!-- CSV upload button -->
+    <button mat-stroked-button (click)="fileInput.click()">
+      افزودن از CSV
+    </button>
+    
     <button mat-stroked-button (click)="openFormDialog(undefined, true)">
       افزودن تجمیعی
     </button>

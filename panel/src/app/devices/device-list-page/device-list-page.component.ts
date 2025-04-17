@@ -1,4 +1,4 @@
-import { Component, computed, signal, ViewChild } from '@angular/core';
+import { Component, computed, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   injectMutation,
@@ -26,6 +26,7 @@ import {
   ConnectionStatus,
   getDeviceStatus,
 } from '../../shared/functions/get-device-status';
+import { CsvService } from '../services/csv.service';
 
 @Component({
   selector: 'app-device-list-page',
@@ -169,10 +170,13 @@ export class DeviceListPageComponent {
     return [];
   });
 
+  @ViewChild('fileInput') fileInput: ElementRef;
+
   constructor(
     private http: HttpClient,
     private dialog: MatDialog,
     private snack: MatSnackBar,
+    private csvService: CsvService,
   ) {}
 
   openFormDialog(device?: Device, isRange?: boolean) {
@@ -213,5 +217,29 @@ export class DeviceListPageComponent {
           );
         }
       });
+  }
+
+  async uploadCsv(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    try {
+      const devices = await this.csvService.processDeviceCsvFile(file);
+      if (devices.length === 0) {
+        this.snack.open('هیچ دستگاه معتبری در فایل CSV یافت نشد', '', { duration: 3000 });
+        return;
+      }
+
+      // Use existing save mutation to create devices
+      await lastValueFrom(this.http.post('/devices', devices));
+      
+      this.snack.open(`${devices.length} دستگاه با موفقیت اضافه شد`, '', { duration: 3000 });
+      this.query.refetch();
+      
+      // Reset file input
+      this.fileInput.nativeElement.value = '';
+    } catch (error: any) {
+      this.snack.open(error?.message || 'خطا در پردازش فایل CSV', '', { duration: 3000 });
+    }
   }
 }
