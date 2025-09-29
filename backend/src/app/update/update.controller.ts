@@ -34,10 +34,10 @@ export class UpdateController {
       .exec();
 
     // for updating 00-... series to 31-... series
-    if (!device && serial.startsWith('31')) {
+    if (!device && serial.startsWith('00')) {
       device = await this.deviceModel
         .findOneAndUpdate(
-          { serial: serial.replace('31', '00') },
+          { serial: serial.replace('00', '31') },
           { connectedAt: new Date(), currentVersion: Number(version) },
         )
         .exec();
@@ -46,7 +46,7 @@ export class UpdateController {
         if (device && version && Number(version) >= 267)
           this.deviceModel
             .findByIdAndUpdate(device.id, {
-              serial,
+              serial: serial.replace('00', '31'),
             })
             .exec();
       } catch (error) {
