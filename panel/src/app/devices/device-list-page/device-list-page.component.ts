@@ -1,8 +1,9 @@
-import { Component, computed, signal, ViewChild, ElementRef } from '@angular/core';
+import { Component, computed, signal, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   injectMutation,
   injectQuery,
+  QueryClient,
 } from '@tanstack/angular-query-experimental';
 import { HttpClient } from '@angular/common/http';
 import { debounceTime, lastValueFrom } from 'rxjs';
@@ -51,6 +52,7 @@ export class DeviceListPageComponent {
   ConnectionStatusText = ConnectionStatusText;
   searchControl = new FormControl('');
   @ViewChild(TableComponent) table: TableComponent;
+  private queryClient = inject(QueryClient);
   searchText = toSignal(
     this.searchControl.valueChanges.pipe(debounceTime(300)),
     {
@@ -130,7 +132,7 @@ export class DeviceListPageComponent {
     refetchInterval: 20000,
   }));
 
-  removeMutation = injectMutation((client) => ({
+  removeMutation = injectMutation(() => ({
     mutationFn: (dto: Device[]) =>
       lastValueFrom(
         this.http.post(
@@ -140,11 +142,11 @@ export class DeviceListPageComponent {
       ),
     onSuccess: async () => {
       this.snack.open('عملیات حذف با موفقیت ثبت شد', '', { duration: 3000 });
-      client.invalidateQueries({ queryKey: ['devices'] });
+      this.queryClient.invalidateQueries({ queryKey: ['devices'] });
     },
   }));
 
-  upgradeMutation = injectMutation((client) => ({
+  upgradeMutation = injectMutation(() => ({
     mutationFn: (dto: { ids: string[]; version: number }) =>
       lastValueFrom(
         this.http.get(`/devices/upgrade/${dto.version}`, {
@@ -153,7 +155,7 @@ export class DeviceListPageComponent {
       ),
     onSuccess: async () => {
       this.snack.open('بروزرسانی با موفقیت انجام شد', '', { duration: 3000 });
-      client.invalidateQueries({ queryKey: ['devices'] });
+      this.queryClient.invalidateQueries({ queryKey: ['devices'] });
     },
   }));
 

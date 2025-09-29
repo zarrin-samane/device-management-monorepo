@@ -26,12 +26,34 @@ export class UpdateController {
     @Param('version') version: string,
     @Query() query,
   ) {
-    const device = await this.deviceModel
+    let device = await this.deviceModel
       .findOneAndUpdate(
         { serial },
         { connectedAt: new Date(), currentVersion: Number(version) },
       )
       .exec();
+
+    // for updating 00-... series to 31-... series
+    if (!device && serial.startsWith('31') && version === '267') {
+      device = await this.deviceModel
+        .findOneAndUpdate(
+          { serial: serial.replace('31', '00') },
+          { connectedAt: new Date(), currentVersion: Number(version) },
+        )
+        .exec();
+
+      try {
+        if (device && version && Number(version) >= 267)
+          this.deviceModel
+            .findByIdAndUpdate(device.id, {
+              serial,
+            })
+            .exec();
+      } catch (error) {
+        // do nothing
+      }
+    }
+
     if (!device) return ERROR_TEXT + 'device not found.';
 
     if (query) {

@@ -20,7 +20,7 @@ import { SHARED } from '../../shared';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Device } from '@device-management/types';
-import { injectMutation } from '@tanstack/angular-query-experimental';
+import { injectMutation, QueryClient } from '@tanstack/angular-query-experimental';
 import { lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
@@ -53,13 +53,14 @@ export class DeviceFormDialogComponent {
   );
   readonly device = this.data?.device;
   formGroup: FormGroup;
-  mutation = injectMutation((client) => ({
+  private queryClient = inject(QueryClient);
+  mutation = injectMutation(() => ({
     mutationFn: (dto: Device | Device[]) =>
       lastValueFrom(this.http.post('/devices', dto)),
     onSuccess: async () => {
       this.snack.open('با موفقیت ثبت شد', '', { duration: 3000 });
       this.dialogRef.close();
-      client.invalidateQueries({ queryKey: ['devices'] });
+      this.queryClient.invalidateQueries({ queryKey: ['devices'] });
     },
     onError: (error: any) => {
       this.snack.open(error.error.message, '', { duration: 3000 });
