@@ -89,9 +89,19 @@ export class UpdateController {
   ) {
     const realHash = this.codes.get(code);
     if (hash === realHash) {
-      const device = await this.deviceModel
+      let device = await this.deviceModel
         .findOneAndUpdate({ serial }, { connectedAt: new Date() })
         .exec();
+
+      // for updating 00-... series to 31-... series
+      if (!device && serial.startsWith('00')) {
+        device = await this.deviceModel
+          .findOneAndUpdate(
+            { serial: serial.replace('00', '31') },
+            { connectedAt: new Date() },
+          )
+          .exec();
+      }
       if (!device)
         return res.status(200).send(ERROR_TEXT + 'device not found.');
 
