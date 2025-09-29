@@ -41,17 +41,13 @@ export class UpdateController {
           { connectedAt: new Date(), currentVersion: Number(version) },
         )
         .exec();
-
-      try {
-        if (device && version && Number(version) >= 267)
-          this.deviceModel
-            .findByIdAndUpdate(device.id, {
-              serial: serial.replace('00', '31'),
-            })
-            .exec();
-      } catch (error) {
-        // do nothing
-      }
+    } else if (!device && serial.startsWith('31')) {
+      device = await this.deviceModel
+        .findOneAndUpdate(
+          { serial: serial.replace('31', '00') },
+          { connectedAt: new Date() },
+        )
+        .exec();
     }
 
     if (!device) return ERROR_TEXT + 'device not found.';
@@ -101,6 +97,24 @@ export class UpdateController {
             { connectedAt: new Date() },
           )
           .exec();
+      } else if (!device && serial.startsWith('31')) {
+        device = await this.deviceModel
+          .findOneAndUpdate(
+            { serial: serial.replace('31', '00') },
+            { connectedAt: new Date() },
+          )
+          .exec();
+
+        try {
+          if (device)
+            this.deviceModel
+              .findByIdAndUpdate(device.id, {
+                serial: serial.replace('00', '31'),
+              })
+              .exec();
+        } catch (error) {
+          // do nothing
+        }
       }
       if (!device)
         return res.status(200).send(ERROR_TEXT + 'device not found.');
