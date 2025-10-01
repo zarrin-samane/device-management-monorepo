@@ -46,7 +46,11 @@ export class UpdateController {
       device = await this.deviceModel
         .findOneAndUpdate(
           { serial: serial.replace('31', '00') },
-          { connectedAt: new Date(), currentVersion: Number(version) },
+          {
+            connectedAt: new Date(),
+            currentVersion: Number(version),
+            serial,
+          },
         )
         .exec();
     }
@@ -102,7 +106,7 @@ export class UpdateController {
         device = await this.deviceModel
           .findOneAndUpdate(
             { serial: serial.replace('31', '00') },
-            { connectedAt: new Date(), serial: serial.replace('31', '00') },
+            { connectedAt: new Date() },
           )
           .exec();
       }
