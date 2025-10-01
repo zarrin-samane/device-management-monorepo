@@ -26,7 +26,7 @@ export class UpdateController {
     @Param('version') version: string,
     @Query() query,
   ) {
-    console.log(serial, version, query);
+    console.log('check', serial, version, query);
     let device = await this.deviceModel
       .findOneAndUpdate(
         { serial },
