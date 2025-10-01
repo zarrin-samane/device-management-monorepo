@@ -26,6 +26,7 @@ export class UpdateController {
     @Param('version') version: string,
     @Query() query,
   ) {
+    console.log(serial, version, query);
     let device = await this.deviceModel
       .findOneAndUpdate(
         { serial },
@@ -45,7 +46,7 @@ export class UpdateController {
       device = await this.deviceModel
         .findOneAndUpdate(
           { serial: serial.replace('31', '00') },
-          { connectedAt: new Date() },
+          { connectedAt: new Date(), currentVersion: Number(version) },
         )
         .exec();
     }
@@ -101,20 +102,9 @@ export class UpdateController {
         device = await this.deviceModel
           .findOneAndUpdate(
             { serial: serial.replace('31', '00') },
-            { connectedAt: new Date() },
+            { connectedAt: new Date(), serial: serial.replace('31', '00') },
           )
           .exec();
-
-        try {
-          if (device)
-            this.deviceModel
-              .findByIdAndUpdate(device.id, {
-                serial: serial.replace('00', '31'),
-              })
-              .exec();
-        } catch (error) {
-          // do nothing
-        }
       }
       if (!device)
         return res.status(200).send(ERROR_TEXT + 'device not found.');
